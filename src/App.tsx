@@ -1,26 +1,60 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { Provider, useDispatch, useSelector } from 'react-redux'
+import { store, ReduxState } from './store'
+import { login, logout } from './api.actions'
+import { reset, setScore } from './view.actions'
 
-function App() {
+const Page = () => {
+  const dispatch = useDispatch()
+  const score = useSelector((state: ReduxState) => state.data.score)
+  const username = useSelector((state: ReduxState) => state.data.username)
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <div>Score: {score}</div>
+      <div>Username: {username}</div>
+      <button
+        onClick={() => {
+          dispatch(
+            login.call({
+              json: { username: 'test', password: 'abc123' },
+              meta: { username: 'test' },
+            }),
+          )
+        }}
+      >
+        Login
+      </button>
+      <button
+        onClick={() => {
+          dispatch(logout.call())
+        }}
+      >
+        Logout
+      </button>
+      <button
+        onClick={() => {
+          dispatch(setScore(score + 1))
+        }}
+      >
+        Increase Score
+      </button>
+
+      <button
+        onClick={() => {
+          dispatch(reset())
+        }}
+      >
+        Reset
+      </button>
     </div>
-  );
+  )
 }
 
-export default App;
+export const App = () => {
+  return (
+    <Provider store={store}>
+      <Page />
+    </Provider>
+  )
+}
